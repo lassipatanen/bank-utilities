@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace bank_utility
 {
     public class BBAN
     {
-        private static bool Validate(string userBankNumber)
+        public static bool Validate(string userBankNumber)
         {
-            string bankNumber = BBAN.FormatBBAN(userBankNumber);
-            if (bankNumber.Length <= 14)
+            Regex rgx = new Regex(@"^(?=.{0,14}$)[1-6|8][0-9]{0,2}\d{3}[-]?\d{2,8}$");
+            if (rgx.IsMatch(userBankNumber.Trim()))
                 return true;
             else
                 return false;
@@ -21,6 +22,7 @@ namespace bank_utility
             // onko luvun sijainti parillinen vai ei
             // jos pariton, kerro luku kahdella ja vähennä siitä 9 ja lisää se kokonaissummaan
             // ja parillinen, kerro luku yhdellä ja lisää se kokonaissumaan
+            return true;
         }
 
         private static string FormatBBAN(string userBankNumber)
