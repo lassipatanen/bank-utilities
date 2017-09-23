@@ -7,18 +7,26 @@ namespace bban_validator
     {
         static void Main(string[] args)
         {
-            //string myBankNumber = "562009-2134961";
-            string myBankNumber = "159030-776";
+            string userInput = "562009-2134961";
+            //string userInput = "159030-776";
 
-            Console.WriteLine("My bank number is: {0}", myBankNumber);
-            Console.WriteLine("My machine format bank number is: {0}", BBAN.FormatBBANToMachine(myBankNumber));
+            Console.WriteLine("My bank number is: {0}", userInput);
+
+            // process user input
+            BankAccountNumber myBankNumber = new BBAN();
+            myBankNumber.ProcessBankAccountNumber(userInput);
+            if (myBankNumber.VerifyCheckDigit(userInput))
+                Console.WriteLine("My bank number is valid");
+            else
+                Console.WriteLine("My bank number is invalid");
+            //Console.WriteLine("My machine format bank number is: {0}", userInput);
 
             // Digit Check
-            Console.Write("Verifying bank number input...\t");
-            if (BBAN.Validate(myBankNumber))
-                Console.Write("Bank number is valid\n");
-            else
-                Console.WriteLine("Bank number is not valid\n");
+            //Console.Write("Verifying bank number input...\t");
+            //if (BBAN.Validate(userInput))
+            //	Console.Write("Bank number is valid\n");
+            //else
+            //	Console.WriteLine("Bank number is not valid\n");
 
 
 

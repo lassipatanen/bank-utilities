@@ -1,55 +1,54 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 
 namespace bank_utility
 {
-    public class BBAN
+    public class BBAN : BankAccountNumber
     {
-        public static bool Validate(string userBankNumber)
+        public override string Convert(string userBankNumber)
         {
-            Regex rgx = new Regex(@"^(?=.{0,14}$)[1-6|8][0-9]{0,2}\d{3}[-]?\d{2,8}$");
-            if (rgx.IsMatch(userBankNumber.Trim()))
+            string bankNumber = ConvertBBANToMachineFormat(userBankNumber);
+            return bankNumber;
+        }
+        public override int CalculateCheckDigit(string userBankNumber)
+        {
+            return 0;
+        }
+        public override bool VerifyCheckDigit(string userBankNumber)
+        {
+            string bankNumber = ConvertBBANToMachineFormat(userBankNumber);
+
+            int checkDigit;
+            int.TryParse(bankNumber[13].ToString(), out checkDigit);
+
+            int checkSum = checkDigit;
+
+            for (int i = 12; i >= 0; i--)
+            {
+                int digit;
+                int.TryParse(bankNumber[i].ToString(), out digit);
+
+                int isOdd = i % 2;
+                if (isOdd != 0)
+                {
+                    checkSum += digit;
+                }
+                else
+                {
+                    digit = digit * 2;
+                    if (digit >= 10)
+                        digit -= 9;
+                    checkSum += digit;
+                }
+            }
+
+            if (checkSum % 10 == 0)
                 return true;
             else
                 return false;
         }
-
-        public static bool VerifyCheckDigit(string userBankNumber)
+        public override void PrintBankAccountInfo(string userBankNumber)
         {
-            string bankNumber = BBAN.FormatBBANToMachine(userBankNumber);
-
-            // käy pankkinumero läpi 13. luvusta alkaen alaspäin
-            // onko luvun sijainti parillinen vai ei
-            // jos pariton, kerro luku kahdella ja vähennä siitä 9 ja lisää se kokonaissummaan
-            // ja parillinen, kerro luku yhdellä ja lisää se kokonaissumaan
-            return true;
-        }
-
-        private static string FormatBBAN(string userBankNumber)
-        {
-            string bankNumber = userBankNumber;
-            bankNumber = bankNumber.Trim();
-            bankNumber = bankNumber.Replace(" ", "");
-            bankNumber = bankNumber.Replace("-", "");
-            return bankNumber;
-        }
-
-        public static string FormatBBANToMachine(string userBankNumber)
-        {
-            if (BBAN.Validate(userBankNumber))
-            {
-                string bankMachineNumber = BBAN.FormatBBAN(userBankNumber);
-                while (bankMachineNumber.Length < 14)
-                {
-                    if (bankMachineNumber.StartsWith("4") || bankMachineNumber.StartsWith("5"))
-                        bankMachineNumber = bankMachineNumber.Insert(7, "0");
-                    else
-                        bankMachineNumber = bankMachineNumber.Insert(6, "0");
-                }
-                return bankMachineNumber;
-            }
-            else
-                return "error";
+            Console.Write("Machine format BBAN number is {0}" + Environment.NewLine, userBankNumber);
         }
     }
 }
