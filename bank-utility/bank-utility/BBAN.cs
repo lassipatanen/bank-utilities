@@ -11,7 +11,35 @@ namespace bank_utility
         }
         public override int CalculateCheckDigit(string userBankNumber)
         {
-            return 0;
+            string bankNumber = ConvertBBANToMachineFormat(userBankNumber);
+            int checkDigit = 0;
+            int checkSum = 0;
+
+            for (int i = bankNumber.Length - 1 ; i >= 0; i--)
+            {
+                int digit;
+                int.TryParse(bankNumber[i].ToString(), out digit);
+
+                int isOdd = i % 2;
+                if (isOdd != 0)
+                {
+                    checkSum += digit;
+                }
+                else
+                {
+                    digit = digit * 2;
+                    if (digit >= 10)
+                        digit -= 9;
+                    checkSum += digit;
+                }
+            }
+
+            while (checkSum % 10 != 0)
+            {
+                checkSum++;
+                checkDigit++;
+            }
+            return checkDigit;
         }
         public override bool VerifyCheckDigit(string userBankNumber)
         {
@@ -22,7 +50,7 @@ namespace bank_utility
 
             int checkSum = checkDigit;
 
-            for (int i = 12; i >= 0; i--)
+            for (int i = bankNumber.Length - 2; i >= 0; i--)
             {
                 int digit;
                 int.TryParse(bankNumber[i].ToString(), out digit);
