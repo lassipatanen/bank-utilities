@@ -6,8 +6,7 @@ namespace bank_utility
     {
         public override string Convert(string userBankNumber)
         {
-            string bankNumber = ConvertBBANToMachineFormat(userBankNumber);
-            return bankNumber;
+            return ConvertBBANToMachineFormat(userBankNumber);
         }
 
         public override int CalculateCheckDigit(string userBankNumber)
@@ -78,9 +77,9 @@ namespace bank_utility
         {
             Console.Write("Machine format BBAN number is {0}" + Environment.NewLine, userBankNumber);
             if (VerifyCheckDigit(userBankNumber))
-                Console.Write("Bank account number is valid." + Environment.NewLine);
+                Console.Write("BBAN is valid." + Environment.NewLine);
             else
-                Console.Write("Bank account number is invalid." + Environment.NewLine);
+                Console.Write("BBAN is invalid." + Environment.NewLine);
         }
     }
 }

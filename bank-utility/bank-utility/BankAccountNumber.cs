@@ -5,25 +5,20 @@ namespace bank_utility
 {
     public abstract class BankAccountNumber
     {
-        // Variables
         private string _bankNumber;
-        // Template Method
+
         public void ProcessBankAccountNumber(string userBankNumber)
         {
-            _bankNumber = this.StripWhiteSpace(userBankNumber);
+            _bankNumber = StripWhiteSpace(userBankNumber);
             if (IsValidInput())
             {
-                FormatBBAN();
                 _bankNumber = Convert(_bankNumber);
                 PrintBankAccountInfo(_bankNumber);
             }
             else
-            {
                 Console.Write("Error. Check your bank account number." + Environment.NewLine);
-            }
         }
 
-        // Public functions
         public string ConvertBBANToMachineFormat(string userBankNumber)
         {
             string bankMachineNumber = _bankNumber;
@@ -37,7 +32,6 @@ namespace bank_utility
             return bankMachineNumber;
         }
 
-        // Private functions
         private string StripWhiteSpace(string userBankNumber)
         {
             string bankNumber = userBankNumber;
@@ -45,17 +39,15 @@ namespace bank_utility
             bankNumber = bankNumber.Replace(" ", "");
             return bankNumber;
         }
+
         private bool IsValidInput()
         {
+            _bankNumber = _bankNumber.Replace("-", "");
             Regex rgx = new Regex(@"^(?=.{0,14}$)[1-6|8][0-9]{0,2}\d{3}[-]?\d{2,8}$");
             if (rgx.IsMatch(_bankNumber))
                 return true;
             else
                 return false;
-        }
-        private void FormatBBAN()
-        {
-            _bankNumber = _bankNumber.Replace("-", "");
         }
 
         // Abstract functions

@@ -1,5 +1,7 @@
 using System;
 using System.Numerics;
+using System.Collections.Generic;
+using System.IO;
 
 namespace bank_utility
 {
@@ -8,14 +10,9 @@ namespace bank_utility
         public override string Convert(string userBankNumber)
         {
             if (VerifyCheckDigit(userBankNumber))
-            {
-                string userIBAN = ConvertBBANToIBAN(userBankNumber);
-                return userIBAN;
-            }
+                return ConvertBBANToIBAN(userBankNumber);
             else
-            {
-                return "false";
-            }
+                return "bank account number is invalid";
         }
         public override int CalculateCheckDigit(string userBankNumber)
         {
@@ -55,6 +52,13 @@ namespace bank_utility
         public override void PrintBankAccountInfo(string userBankNumber)
         {
             Console.Write("IBAN number is {0}" + Environment.NewLine, userBankNumber);
+            if (VerifyIBANAccountNumber(userBankNumber))
+            {
+                Console.WriteLine("IBAN is valid");
+                Console.WriteLine(GetBicCode(userBankNumber));
+            }
+            else
+                Console.WriteLine("IBAN is invalid");
         }
         private string ConvertBBANToIBAN(string userBankNumber)
         {
@@ -63,7 +67,7 @@ namespace bank_utility
             bankNumber = bankNumber + "FI00";
             bankNumber = bankNumber.Replace("FI", "1518");
 
-            string countryIDandDigit;
+            string countryIdAndDigit;
 
             BigInteger evaluatedNumber;
             bool isit = BigInteger.TryParse(bankNumber, out evaluatedNumber);
@@ -72,13 +76,54 @@ namespace bank_utility
             BigInteger checkDigit = 98 - remainder;
 
             if (checkDigit < 10)
-                countryIDandDigit = "FI0" + checkDigit.ToString();
+                countryIdAndDigit = "FI0" + checkDigit.ToString();
             else
-                countryIDandDigit = "FI" + checkDigit.ToString();
+                countryIdAndDigit = "FI" + checkDigit.ToString();
 
-            bankNumber = countryIDandDigit + bankNumberMachineFormat;
+            bankNumber = countryIdAndDigit + bankNumberMachineFormat;
 
             return bankNumber;
+        }
+        private bool VerifyIBANAccountNumber(string userBankNumber)
+        {
+            string bankNumber = userBankNumber;
+            string countryIdAndDigit = bankNumber.Substring(0, 4);
+            bankNumber = bankNumber.Replace(countryIdAndDigit, "");
+            bankNumber = bankNumber + countryIdAndDigit;
+            bankNumber = bankNumber.Replace("FI", "1518");
+
+            BigInteger eval;
+            BigInteger.TryParse(bankNumber, out eval);
+
+            BigInteger checkSum = eval % 97;
+
+            if (checkSum == 1)
+                return true;
+            else
+                return false;
+        }
+
+        private string GetBicCode(string userBankNumber)
+        {
+            List<Bic> bicCodes = new List<Bic>();
+            using (StreamReader r = new StreamReader("bic-codes.json"))
+            {
+                string json = r.ReadToEnd();
+                bicCodes = JsonConvert.DeserializeObject<List<Bic>>(json);
+                if( userBankNumber[0].Equals("3") )
+                {
+                    string bankID = userBankNumber.Substring(0,2);
+                }
+                else if( userBankNumber[0].Equals("4") || userBankNumber[0].Equals("7"))
+                {
+                    string bankID = userBankNumber.Substring(0,3);
+                }
+                else
+                {
+                    string bankID = userBankNumber.Substring(0,1);
+                }
+                return bankID;
+            }
         }
     }
 }
