@@ -105,22 +105,23 @@ namespace bank_utility
 
         private string GetBicCode(string userBankNumber)
         {
+            string path = @"c:\dev\MyTest.txt";
             List<Bic> bicCodes = new List<Bic>();
-            using (StreamReader r = new StreamReader("bic-codes.json"))
+            using (StreamReader r = new StreamReader(path))
             {
                 string json = r.ReadToEnd();
                 bicCodes = JsonConvert.DeserializeObject<List<Bic>>(json);
-                if( userBankNumber[0].Equals("3") )
+                if (userBankNumber[0].Equals("3"))
                 {
-                    string bankID = userBankNumber.Substring(0,2);
+                    string bankID = userBankNumber.Substring(0, 2);
                 }
-                else if( userBankNumber[0].Equals("4") || userBankNumber[0].Equals("7"))
+                else if (userBankNumber[0].Equals("4") || userBankNumber[0].Equals("7"))
                 {
-                    string bankID = userBankNumber.Substring(0,3);
+                    string bankID = userBankNumber.Substring(0, 3);
                 }
                 else
                 {
-                    string bankID = userBankNumber.Substring(0,1);
+                    string bankID = userBankNumber.Substring(0, 1);
                 }
                 return bankID;
             }
