@@ -5,7 +5,9 @@ namespace bank_utility
 {
     public abstract class BankAccountNumber
     {
+        // Variables
         private string _bankNumber;
+        // Template Method
         public void ProcessBankAccountNumber(string userBankNumber)
         {
             _bankNumber = this.StripWhiteSpace(userBankNumber);
@@ -17,11 +19,11 @@ namespace bank_utility
             }
             else
             {
-                Console.Write("Error" + Environment.NewLine);
+                Console.Write("Error. Check your bank account number." + Environment.NewLine);
             }
-
         }
 
+        // Public functions
         public string ConvertBBANToMachineFormat(string userBankNumber)
         {
             string bankMachineNumber = _bankNumber;
@@ -36,7 +38,6 @@ namespace bank_utility
         }
 
         // Private functions
-
         private string StripWhiteSpace(string userBankNumber)
         {
             string bankNumber = userBankNumber;
@@ -58,9 +59,9 @@ namespace bank_utility
         }
 
         // Abstract functions
-        public abstract void PrintBankAccountInfo(string userBankNumber);
         public abstract string Convert(string userBankNumber);
         public abstract int CalculateCheckDigit(string userBankNumber);
         public abstract bool VerifyCheckDigit(string userBankNumber);
+        public abstract void PrintBankAccountInfo(string userBankNumber);
     }
 }

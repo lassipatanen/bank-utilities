@@ -9,13 +9,14 @@ namespace bank_utility
             string bankNumber = ConvertBBANToMachineFormat(userBankNumber);
             return bankNumber;
         }
+
         public override int CalculateCheckDigit(string userBankNumber)
         {
             string bankNumber = ConvertBBANToMachineFormat(userBankNumber);
             int checkDigit = 0;
             int checkSum = 0;
 
-            for (int i = bankNumber.Length - 1 ; i >= 0; i--)
+            for (int i = bankNumber.Length - 1; i >= 0; i--)
             {
                 int digit;
                 int.TryParse(bankNumber[i].ToString(), out digit);
@@ -41,24 +42,26 @@ namespace bank_utility
             }
             return checkDigit;
         }
+
         public override bool VerifyCheckDigit(string userBankNumber)
         {
             string bankNumber = ConvertBBANToMachineFormat(userBankNumber);
 
             int checkDigit;
-            int.TryParse(bankNumber[13].ToString(), out checkDigit);
+            int.TryParse(bankNumber[bankNumber.Length - 1].ToString(), out checkDigit);
 
             int checkSum = checkDigit;
+            bool isOdd = false;
 
             for (int i = bankNumber.Length - 2; i >= 0; i--)
             {
                 int digit;
                 int.TryParse(bankNumber[i].ToString(), out digit);
 
-                int isOdd = i % 2;
-                if (isOdd != 0)
+                if (isOdd)
                 {
                     checkSum += digit;
+                    isOdd = false;
                 }
                 else
                 {
@@ -66,17 +69,18 @@ namespace bank_utility
                     if (digit >= 10)
                         digit -= 9;
                     checkSum += digit;
+                    isOdd = true;
                 }
             }
-
-            if (checkSum % 10 == 0)
-                return true;
-            else
-                return false;
+            return checkSum % 10 == 0;
         }
         public override void PrintBankAccountInfo(string userBankNumber)
         {
             Console.Write("Machine format BBAN number is {0}" + Environment.NewLine, userBankNumber);
+            if (VerifyCheckDigit(userBankNumber))
+                Console.Write("Bank account number is valid." + Environment.NewLine);
+            else
+                Console.Write("Bank account number is invalid." + Environment.NewLine);
         }
     }
 }
