@@ -4,7 +4,15 @@ using System.Text;
 
 namespace bank_utility
 {
-    class InternationalReferenceNumber
+    public class InternationalReferenceNumber
     {
+        public InternationalReferenceNumber()
+        {
+            //
+        }
+        public bool Check()
+        {
+            return true;
+        }
     }
 }
