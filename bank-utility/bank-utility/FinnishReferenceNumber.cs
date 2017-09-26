@@ -153,5 +153,9 @@ namespace bank_utility
             }
             return formattedReferenceNumber;
         }
+        public void PrintInfo()
+        {
+            Console.WriteLine(FormatReferenceNumber(ReferenceNumber));
+        }
     }
 }

@@ -7,32 +7,45 @@ namespace reference_numbers
     {
         static void Main(string[] args)
         {
-			Console.WriteLine("Good morning, sir! How can we help you today?");
 
-			int option = 0;
+            var option = 0;
+            while (option == 0)
+            {
+                Console.Clear();
+                Console.WriteLine("Good morning, sir! How can we help you today?");
+                // Generate referecene numbers
+                Console.WriteLine("1. Generate reference numbers.");
+                // Validate reference number
+                Console.WriteLine("2. Validate reference number.");
+                // Convert finnish reference number to international reference number
+                Console.WriteLine("3. Convert finish reference number to international reference number");
 
-			while (option == 0) 
-			{
-				// Generate referecene numbers
-				Console.WriteLine("1. Generate reference numbers.");
-				// Validate reference number
-				Console.WriteLine("2. Validate reference number.");
-				// Convert finnish reference number to international reference number
-				Console.WriteLine("3. Convert finish reference number to international reference number");
+                switch (Console.ReadKey(true).Key)
+                {
+                    case ConsoleKey.D1:
+                        Console.WriteLine("How many reference numbers do ou want to generate?");
+                        // end
+                        option = 1;
+                        break;
+                    case ConsoleKey.D2:
+                        Console.WriteLine("Enter the reference number to validate.");
+                        // end
+                        option = 2;
+                        break;
+                    case ConsoleKey.D3:
+                        Console.WriteLine("Enter finnish reference number to convert it in to international format.");
+                        FinnishReferenceNumber userRefNro = new FinnishReferenceNumber(Console.ReadLine());
+                        if (userRefNro.Validate())
+                            userRefNro.PrintInfo();
+                        // end
+                        option = 3;
+                        break;
+                }
+            }
 
-                string selected = Console.Read().ToString();
-
-                if (selected.Equals("1"))
-					Console.WriteLine("You selected 1");
-				if(selected.Equals("2"))
-					Console.WriteLine("You selected 2");
-                if (selected.Equals("3"))
-                    Console.WriteLine("You selected 3");
-			}	
 
 
-
-        	/*
+            /*
             string validRef = "12345672";
             string invalidRef = "12345673";
 
