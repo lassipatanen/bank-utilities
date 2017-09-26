@@ -14,7 +14,7 @@ namespace reference_numbers
             if(myValidRef.ValidateCheckDigit(validRef))
 				Console.WriteLine("{0} is valid", myValidRef.FormatReferenceNumber(validRef));
 			else
-				Console.WriteLine("{0} is valid", myValidRef.FormatReferenceNumber(validRef));
+				Console.WriteLine("{0} is invalid", myValidRef.FormatReferenceNumber(validRef));
 
             FinnishReferenceNumber myInvalidRef = new FinnishReferenceNumber();
             if(myInvalidRef.ValidateCheckDigit(invalidRef))

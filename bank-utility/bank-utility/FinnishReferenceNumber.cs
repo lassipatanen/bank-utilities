@@ -70,7 +70,7 @@ namespace bank_utility
             ReferenceNumber.Trim();
             ReferenceNumber.Replace(" ", "");
 
-            Regex rgx = new Regex(@"^(?=.{0,14}$)[1-6|8][0-9]{0,2}\d{3}[-]?\d{2,8}$");
+            Regex rgx = new Regex(@"^\d{3,18}$");
             if (rgx.IsMatch(ReferenceNumber))
                 return true;
             else
@@ -83,7 +83,7 @@ namespace bank_utility
             referenceNumber.Trim();
             referenceNumber.Replace(" ", "");
 
-            Regex rgx = new Regex(@"^(?=.{0,14}$)[1-6|8][0-9]{0,2}\d{3}[-]?\d{2,8}$");
+            Regex rgx = new Regex(@"^\d{3,18}$");
             if (rgx.IsMatch(referenceNumber))
                 return true;
             else
