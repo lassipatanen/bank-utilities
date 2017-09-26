@@ -89,53 +89,53 @@ namespace bank_utility
             else
                 return false;
         }
-        
+
         public bool ValidateCheckDigit(string referenceNumber)
         {
-        	if( Validate(referenceNumber) )
-        	{
-        		int checkDigitToCompare = int.Parse( referenceNumber[referenceNumber.Length-1].ToString() );
+            if (Validate(referenceNumber))
+            {
+                int checkDigitToCompare = int.Parse(referenceNumber[referenceNumber.Length - 1].ToString());
 
-        		int checkSum = 0;
-           	 	int weight = 7;
-           	 	for (int i = referenceNumber.Length - 2; i >= 0; i--)
-           	 	{
-           	 	    int digit;
-           	 	    int.TryParse(referenceNumber[i].ToString(), out digit);
-		
-         	  	     if (weight == 7)
-         	  	     {
-         	  	         checkSum += digit * weight;
-         	  	         weight = 3;
-         	  	     }
-         	  	     else if (weight == 3)
-         	  	     {
-         	  	         checkSum += digit * weight;
-         	  	         weight = 1;
-         	  	     }
-         	  	     else
-         	  	     {
-         	  	         checkSum += digit * weight;
-         	  	         weight = 7;
-         	  	     }
-         	  	 }
+                int checkSum = 0;
+                int weight = 7;
+                for (int i = referenceNumber.Length - 2; i >= 0; i--)
+                {
+                    int digit;
+                    int.TryParse(referenceNumber[i].ToString(), out digit);
 
-         	  	 int checkDigit = 0;
-         	  	 
-         	  	 if (checkSum % 10 != 0)
-         	  	     checkDigit = (10 - checkSum % 10);
-         	  	 else
-	     	  	     checkDigit = 0;
-	     	  	 
-	     	  	 if( checkDigitToCompare.Equals(checkDigit))
-	     	  	 	return true;
-	     	  	 else
-	     	  	 	return false;
-        	}
-        	else 
-        		return false; 
+                    if (weight == 7)
+                    {
+                        checkSum += digit * weight;
+                        weight = 3;
+                    }
+                    else if (weight == 3)
+                    {
+                        checkSum += digit * weight;
+                        weight = 1;
+                    }
+                    else
+                    {
+                        checkSum += digit * weight;
+                        weight = 7;
+                    }
+                }
+
+                int checkDigit = 0;
+
+                if (checkSum % 10 != 0)
+                    checkDigit = (10 - checkSum % 10);
+                else
+                    checkDigit = 0;
+
+                if (checkDigitToCompare.Equals(checkDigit))
+                    return true;
+                else
+                    return false;
+            }
+            else
+                return false;
         }
-        
+
         public string FormatReferenceNumber(string referenceNumber)
         {
             string formattedReferenceNumber = "";

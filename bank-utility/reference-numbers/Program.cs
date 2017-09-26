@@ -11,16 +11,16 @@ namespace reference_numbers
             string invalidRef = "12345673";
 
             FinnishReferenceNumber myValidRef = new FinnishReferenceNumber();
-            if(myValidRef.ValidateCheckDigit(validRef))
-				Console.WriteLine("{0} is valid", myValidRef.FormatReferenceNumber(validRef));
-			else
-				Console.WriteLine("{0} is invalid", myValidRef.FormatReferenceNumber(validRef));
+            if (myValidRef.ValidateCheckDigit(validRef))
+                Console.WriteLine("{0} is valid", myValidRef.FormatReferenceNumber(validRef));
+            else
+                Console.WriteLine("{0} is invalid", myValidRef.FormatReferenceNumber(validRef));
 
             FinnishReferenceNumber myInvalidRef = new FinnishReferenceNumber();
-            if(myInvalidRef.ValidateCheckDigit(invalidRef))
-				Console.WriteLine("{0} is valid", myValidRef.FormatReferenceNumber(invalidRef));
+            if (myInvalidRef.ValidateCheckDigit(invalidRef))
+                Console.WriteLine("{0} is valid", myValidRef.FormatReferenceNumber(invalidRef));
             else
-				Console.WriteLine("{0} is invalid", myValidRef.FormatReferenceNumber(invalidRef));
+                Console.WriteLine("{0} is invalid", myValidRef.FormatReferenceNumber(invalidRef));
 
             Console.WriteLine("\n-----------------------------------------");
             Console.WriteLine("Generating a new set of reference numbers");
@@ -36,6 +36,15 @@ namespace reference_numbers
                 else
                     Console.WriteLine("Error");
             }
+
+            Console.WriteLine("\nInternational reference number");
+            InternationalReferenceNumber myIntRef = new InternationalReferenceNumber();
+            Console.WriteLine(myIntRef.GenerateReferenceNumber("2348236"));
+
+            if (myIntRef.Validate("RF332348236"))
+                Console.WriteLine("\nInternational reference number is valid");
+            else
+                Console.WriteLine("\nInternational reference number invalid");
 
             // END
             Console.WriteLine("\nPress any key to continue....");
