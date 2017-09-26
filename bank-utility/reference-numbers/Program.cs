@@ -7,6 +7,32 @@ namespace reference_numbers
     {
         static void Main(string[] args)
         {
+			Console.WriteLine("Good morning, sir! How can we help you today?");
+
+			int option = 0;
+
+			while (option == 0) 
+			{
+				// Generate referecene numbers
+				Console.WriteLine("1. Generate reference numbers.");
+				// Validate reference number
+				Console.WriteLine("2. Validate reference number.");
+				// Convert finnish reference number to international reference number
+				Console.WriteLine("3. Convert finish reference number to international reference number");
+
+                string selected = Console.Read().ToString();
+
+                if (selected.Equals("1"))
+					Console.WriteLine("You selected 1");
+				if(selected.Equals("2"))
+					Console.WriteLine("You selected 2");
+                if (selected.Equals("3"))
+                    Console.WriteLine("You selected 3");
+			}	
+
+
+
+        	/*
             string validRef = "12345672";
             string invalidRef = "12345673";
 
@@ -39,12 +65,14 @@ namespace reference_numbers
 
             Console.WriteLine("\nInternational reference number");
             InternationalReferenceNumber myIntRef = new InternationalReferenceNumber();
-            Console.WriteLine(myIntRef.GenerateReferenceNumber("2348236"));
+            string r = myIntRef.GenerateReferenceNumber("12345672"); // 12345672, 2348236
+            Console.WriteLine(r);
 
-            if (myIntRef.Validate("RF332348236"))
-                Console.WriteLine("\nInternational reference number is valid");
+            if (myIntRef.Validate(r))
+                Console.WriteLine("\nInternational reference number {0} is valid", r);
             else
-                Console.WriteLine("\nInternational reference number invalid");
+                Console.WriteLine("\nInternational reference number {0} invalid", r);
+            */
 
             // END
             Console.WriteLine("\nPress any key to continue....");
