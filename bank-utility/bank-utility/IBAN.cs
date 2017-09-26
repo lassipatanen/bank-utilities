@@ -2,6 +2,7 @@ using System;
 using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace bank_utility
 {
@@ -14,10 +15,12 @@ namespace bank_utility
             else
                 return "bank account number is invalid";
         }
+
         public override int CalculateCheckDigit(string userBankNumber)
         {
             return 0;
         }
+
         public override bool VerifyCheckDigit(string userBankNumber)
         {
             string bankNumber = ConvertBBANToMachineFormat(userBankNumber);
@@ -49,17 +52,19 @@ namespace bank_utility
             }
             return checkSum % 10 == 0;
         }
+
         public override void PrintBankAccountInfo(string userBankNumber)
         {
             Console.Write("IBAN number is {0}" + Environment.NewLine, userBankNumber);
             if (VerifyIBANAccountNumber(userBankNumber))
             {
                 Console.WriteLine("IBAN is valid");
-                Console.WriteLine(GetBicCode(userBankNumber));
+                Console.WriteLine("BIC code is: {0}", GetBicCode(userBankNumber));
             }
             else
                 Console.WriteLine("IBAN is invalid");
         }
+
         private string ConvertBBANToIBAN(string userBankNumber)
         {
             string bankNumberMachineFormat = ConvertBBANToMachineFormat(userBankNumber);
@@ -84,6 +89,7 @@ namespace bank_utility
 
             return bankNumber;
         }
+
         private bool VerifyIBANAccountNumber(string userBankNumber)
         {
             string bankNumber = userBankNumber;
@@ -105,25 +111,36 @@ namespace bank_utility
 
         private string GetBicCode(string userBankNumber)
         {
-            string path = @"c:\dev\MyTest.txt";
             List<Bic> bicCodes = new List<Bic>();
-            using (StreamReader r = new StreamReader(path))
+
+            string path = @"C:\dev\bank-utilities\bank-utility\bank-utility\bic-codes.json";
+
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            using (var sr = new System.IO.StreamReader(fs))
             {
-                string json = r.ReadToEnd();
+                //Read file via sr.Read(), sr.ReadLine, ...
+                string json = sr.ReadToEnd();
                 bicCodes = JsonConvert.DeserializeObject<List<Bic>>(json);
+
+                string bankID;
+
                 if (userBankNumber[0].Equals("3"))
-                {
-                    string bankID = userBankNumber.Substring(0, 2);
-                }
+                    bankID = userBankNumber.Substring(4, 2);
                 else if (userBankNumber[0].Equals("4") || userBankNumber[0].Equals("7"))
-                {
-                    string bankID = userBankNumber.Substring(0, 3);
-                }
+                    bankID = userBankNumber.Substring(4, 3);
                 else
+                    bankID = userBankNumber.Substring(4, 1);
+
+                string bicCode = "";
+                foreach (Bic bicObj in bicCodes)
                 {
-                    string bankID = userBankNumber.Substring(0, 1);
+                    if (bicObj.Id == bankID)
+                    {
+                        bicCode = bicObj.Name;
+                        break;
+                    }
                 }
-                return bankID;
+                return bicCode;
             }
         }
     }
