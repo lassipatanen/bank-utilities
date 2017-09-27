@@ -5,7 +5,7 @@ namespace bank_utility
 {
     public abstract class BankAccountNumber
     {
-        private string _bankNumber;
+        public string _bankNumber;
 
         public void ProcessBankAccountNumber(string userBankNumber)
         {
@@ -13,7 +13,7 @@ namespace bank_utility
             if (IsValidInput())
             {
                 _bankNumber = Convert(_bankNumber);
-                PrintBankAccountInfo(_bankNumber);
+                //GetBankAccountInfo(_bankNumber);
             }
             else
                 Console.Write("Error. Check your bank account number." + Environment.NewLine);
@@ -40,7 +40,7 @@ namespace bank_utility
             return bankNumber;
         }
 
-        private bool IsValidInput()
+        public bool IsValidInput()
         {
             _bankNumber = _bankNumber.Replace("-", "");
             Regex rgx = new Regex(@"^(?=.{0,14}$)[1-6|8][0-9]{0,2}\d{3}[-]?\d{2,8}$");
@@ -55,5 +55,7 @@ namespace bank_utility
         public abstract int CalculateCheckDigit(string userBankNumber);
         public abstract bool VerifyCheckDigit(string userBankNumber);
         public abstract void PrintBankAccountInfo(string userBankNumber);
+        public abstract string GetBankAccountInfo(string userBankNumber);
+        public abstract bool Validate();
     }
 }

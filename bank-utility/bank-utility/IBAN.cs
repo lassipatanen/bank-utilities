@@ -3,27 +3,50 @@ using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace bank_utility
 {
-    public class IBAN : BankAccountNumber
+    public class IBAN
     {
-        public override string Convert(string userBankNumber)
+        // Variables
+        private string _bankAccountNumber;
+
+        // Const
+        public IBAN(string userBankAccountNumber)
         {
-            if (VerifyCheckDigit(userBankNumber))
-                return ConvertBBANToIBAN(userBankNumber);
+            _bankAccountNumber = userBankAccountNumber;
+        }
+
+        // Public functions
+
+        public string Convert()
+        {
+            string bbmf = ConvertBBANToMachineFormat(_bankAccountNumber);
+            if (VerifyCheckDigit(_bankAccountNumber))
+                return ConvertBBANToIBAN(_bankAccountNumber);
             else
                 return "bank account number is invalid";
         }
 
-        public override int CalculateCheckDigit(string userBankNumber)
+        public bool IsValidInput()
+        {
+            _bankAccountNumber = _bankAccountNumber.Replace("-", "");
+            Regex rgx = new Regex(@"^(?=.{0,14}$)[1-6|8][0-9]{0,2}\d{3}[-]?\d{2,8}$");
+            if (rgx.IsMatch(_bankAccountNumber))
+                return true;
+            else
+                return false;
+        }
+
+        public int CalculateCheckDigit(string userBankAccountNumber)
         {
             return 0;
         }
 
-        public override bool VerifyCheckDigit(string userBankNumber)
+        public bool VerifyCheckDigit(string userBankAccountNumber)
         {
-            string bankNumber = ConvertBBANToMachineFormat(userBankNumber);
+            string bankNumber = this.ConvertBBANToMachineFormat(userBankAccountNumber);
 
             int checkDigit;
             int.TryParse(bankNumber[bankNumber.Length - 1].ToString(), out checkDigit);
@@ -53,21 +76,51 @@ namespace bank_utility
             return checkSum % 10 == 0;
         }
 
-        public override void PrintBankAccountInfo(string userBankNumber)
+        public void PrintBankAccountInfo(string userBankAccountNumber)
         {
-            Console.Write("IBAN number is {0}" + Environment.NewLine, userBankNumber);
-            if (VerifyIBANAccountNumber(userBankNumber))
+            Console.Write("IBAN number is {0}" + Environment.NewLine, userBankAccountNumber);
+            if (VerifyIBANAccountNumber(userBankAccountNumber))
             {
                 Console.WriteLine("IBAN is valid");
-                Console.WriteLine("BIC code is: {0}", GetBicCode(userBankNumber));
+                Console.WriteLine("BIC code is: {0}", GetBicCode(userBankAccountNumber));
             }
             else
                 Console.WriteLine("IBAN is invalid");
         }
 
-        private string ConvertBBANToIBAN(string userBankNumber)
+        public string GetBankAccountInfo(string userBankAccountNumber)
         {
-            string bankNumberMachineFormat = ConvertBBANToMachineFormat(userBankNumber);
+            if (VerifyIBANAccountNumber(userBankAccountNumber))
+                return userBankAccountNumber;
+            else
+                return "error";
+        }
+
+        public bool Validate()
+        {
+            if (IsValidInput())
+                return true;
+            else
+                return false;
+        }
+
+        // Private functions
+        public string ConvertBBANToMachineFormat(string userBankAccountNumber)
+        {
+            string machineFormatBankAccountNumber = _bankAccountNumber.Replace("-", "");
+            while (machineFormatBankAccountNumber.Length < 14)
+            {
+                if (machineFormatBankAccountNumber.StartsWith("4") || machineFormatBankAccountNumber.StartsWith("5"))
+                    machineFormatBankAccountNumber = machineFormatBankAccountNumber.Insert(7, "0");
+                else
+                    machineFormatBankAccountNumber = machineFormatBankAccountNumber.Insert(6, "0");
+            }
+            return machineFormatBankAccountNumber;
+        }
+
+        private string ConvertBBANToIBAN(string userBankAccountNumber)
+        {
+            string bankNumberMachineFormat = ConvertBBANToMachineFormat(userBankAccountNumber);
             string bankNumber = bankNumberMachineFormat;
             bankNumber = bankNumber + "FI00";
             bankNumber = bankNumber.Replace("FI", "1518");
@@ -90,9 +143,9 @@ namespace bank_utility
             return bankNumber;
         }
 
-        private bool VerifyIBANAccountNumber(string userBankNumber)
+        private bool VerifyIBANAccountNumber(string userBankAccountNumber)
         {
-            string bankNumber = userBankNumber;
+            string bankNumber = userBankAccountNumber;
             string countryIdAndDigit = bankNumber.Substring(0, 4);
             bankNumber = bankNumber.Replace(countryIdAndDigit, "");
             bankNumber = bankNumber + countryIdAndDigit;
@@ -109,7 +162,7 @@ namespace bank_utility
                 return false;
         }
 
-        private string GetBicCode(string userBankNumber)
+        private string GetBicCode(string userBankAccountNumber)
         {
             List<Bic> bicCodes = new List<Bic>();
 
@@ -124,12 +177,12 @@ namespace bank_utility
 
                 string bankID;
 
-                if (userBankNumber[0].Equals("3"))
-                    bankID = userBankNumber.Substring(4, 2);
-                else if (userBankNumber[0].Equals("4") || userBankNumber[0].Equals("7"))
-                    bankID = userBankNumber.Substring(4, 3);
+                if (userBankAccountNumber[0].Equals("3"))
+                    bankID = userBankAccountNumber.Substring(4, 2);
+                else if (userBankAccountNumber[0].Equals("4") || userBankAccountNumber[0].Equals("7"))
+                    bankID = userBankAccountNumber.Substring(4, 3);
                 else
-                    bankID = userBankNumber.Substring(4, 1);
+                    bankID = userBankAccountNumber.Substring(4, 1);
 
                 string bicCode = "";
                 foreach (Bic bicObj in bicCodes)
@@ -142,6 +195,14 @@ namespace bank_utility
                 }
                 return bicCode;
             }
+        }
+
+        private string StripWhiteSpace(string userBankAccountNumber)
+        {
+            string bankNumber = userBankAccountNumber;
+            bankNumber = bankNumber.Trim();
+            bankNumber = bankNumber.Replace(" ", "");
+            return bankNumber;
         }
     }
 }
