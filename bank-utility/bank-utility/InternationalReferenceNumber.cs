@@ -1,7 +1,8 @@
-﻿using System;
+﻿ using System;
 using System.Numerics;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace bank_utility
 {
@@ -11,15 +12,31 @@ namespace bank_utility
         public string ReferenceNumber { get; set; }
 
         // Const
-        public InternationalReferenceNumber()
+        public InternationalReferenceNumber(string referenceNumber)
         {
-            //
+            // If input is null or empty do nothing
+            if (String.IsNullOrEmpty(referenceNumber))
+                ReferenceNumber = "not set";
+            else
+                ReferenceNumber = referenceNumber;
+                // Is input correctly formatted finnish reference number?
+                if(new finnishReferenceNumber(ReferenceNumber).Validate())
+                    // If so convert it to international format
+                    ReferenceNumber = GenerateReferenceNumber(referenceNumber);
         }
-
-        public bool Validate(string internationalReferenceNumber)
+        // Public funtions
+        public bool Validate()
         {
-            string rf = internationalReferenceNumber.Substring(0, 4);
-            string myInternationalRefNro = internationalReferenceNumber.Remove(0, 4) + rf;
+            Regex rgx = new Regex(@"^RF\d{2}\d{4,20}$");
+            if (rgx.IsMatch(ReferenceNumber.Trim().Replace(" ", "")))
+                return true;
+            else
+                return false;
+        }
+        public bool ValidateCheckDigit()
+        {
+            string rf = ReferenceNumber.Substring(0, 4);
+            string myInternationalRefNro = ReferenceNumber.Remove(0, 4) + rf;
             myInternationalRefNro = myInternationalRefNro.Replace("RF", "2715");
 
             BigInteger evaluatedNumber;
@@ -32,7 +49,6 @@ namespace bank_utility
             else
                 return false;
         }
-
         public string GenerateReferenceNumber(string finnishReferenceNumber)
         {
             string internationalReferenceNumber = finnishReferenceNumber + "271500";

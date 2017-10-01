@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -8,87 +10,123 @@ namespace bank_utility
     public class VirtualBarcode
     {
         // Variables
-        private string _bankNumber;
+        private int _startcodeC = 105;
+        private string _mode;
+        private string _bankAccountNumber;
+        private decimal _sumOfBill;
+        private string _referenceNumber;
+        private DateTime _dueDate;
         private string _virtualBarcode;
 
         // Const
-        public VirtualBarcode(string mode, string userBankNumber, string sumOfBill, string referenceNumber, string dueDate)
+        public VirtualBarcode(string mode, string userBankAccountNumber, string sumOfBill, string referenceNumber, string dueDate)
         {
-            if (IsValidBbanOrIban(userBankNumber))
-            {
-                _bankNumber = userBankNumber;
-                BBAN userBban = new BBAN(_bankNumber);
-                IBAN userIban = new IBAN(userBban.Convert());
-                FinnishReferenceNumber userFinRef = new FinnishReferenceNumber();
-                InternationalReferenceNumber userIntRef = new InternationalReferenceNumber();
+            // check that mode is correct
+            if( mode.Equals("4") || mode.Equals("5") )
+                _mode = mode;
 
-                string myref = userIntRef.GenerateReferenceNumber(userFinRef.GenerateReferenceNumber(referenceNumber));
-                myref = myref.Replace("RF", "");
-                while (myref.Length < 23)
-                {
-                    myref = myref.Insert(2, "0");
-                }
+            if(IsValidBbanOrIban(userBankAccountNumber))
+                _bankAccountNumber = userBankAccountNumber;
 
-                string mysum = sumOfBill.Replace(",", "");
-                while (mysum.Length < 8)
-                {
-                    mysum = mysum.Insert(0, "0");
-                }
+            if(new FinnishReferenceNumber(referenceNumber).Validate() || new InternationalReferenceNumber(referenceNumber).Validate())
+                _referenceNumber = referenceNumber;
 
-                // Format due date
-                //  1.7.2017
-                string[] separators = { ".", "/" };
-                string[] dates = dueDate.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-                string formattedDueDate = new DateTime(
-                    int.Parse(dates[2]),
-                    int.Parse(dates[1]),
-                    int.Parse(dates[0])
-                ).ToString("yyMMdd");
-                string checkDigit = "1";
+            Decimal.TryParse(sumOfBill, out _sumOfBill);
 
-                string outputVirtualBarcode = String.Format(
-                    "{0} {1} {2} {3} {4} {5} {6} {7}",
-                    "X",
-                    mode,
-                    userIban.Convert().Replace("FI", ""),
-                    mysum,
-                    myref,
-                    formattedDueDate,
-                    checkDigit,
-                    "Y"
-                );
+            _dueDate = DateTime.Parse(dueDate);
 
-                Console.WriteLine(outputVirtualBarcode.Replace(" ", " "));
-            }
-            else
-                Console.WriteLine("Bank account number is not valid BBAN or IBAN.");
+            _virtualBarcode = BuildVirtualBarcode();
         }
 
-        // Public functions
-        public void Print()
-        {
-            FormatBarcode();
-            Console.WriteLine(_virtualBarcode);
-        }
+        // Private functions
 
-        private bool IsValidBbanOrIban(string userBankNumber)
+        private bool IsValidBbanOrIban(string userBankAccountNumber)
         {
-            // detect what format userinput is in
-            Regex rgxBBAN = new Regex(@"^(?=.{0,14}$)[1-6|8][0-9]{0,2}\d{3}[-]?\d{2,8}$");
-            Regex rgxIBAN = new Regex(@"^(?=.{0,14}$)[1-6|8][0-9]{0,2}\d{3}[-]?\d{2,8}$");
+            BBAN isBBAN = new BBAN(userBankAccountNumber);
+            IBAN isIBAN = new IBAN(userBankAccountNumber);
 
-            if (rgxBBAN.IsMatch(userBankNumber) || rgxIBAN.IsMatch(userBankNumber))
+            if(new BBAN(userBankAccountNumber).Validate() || new IBAN(userBankAccountNumber).Validate())
                 return true;
             else
                 return false;
         }
 
-        // Private functions
-        private void FormatBarcode()
+        private string BuildVirtualBarcode()
         {
-            // Is user input bban or iban
-            // detect input format
-            // create virtual barcode based in input
+            BBAN userBban = new BBAN(_bankAccountNumber);
+            IBAN userIban = new IBAN(_bankAccountNumber);
+
+            FinnishReferenceNumber userFinRef = new FinnishReferenceNumber(_referenceNumber);
+            InternationalReferenceNumber userIntRef = new InternationalReferenceNumber(userFinRef.ToString());
+
+            if(new FinnishReferenceNumber(_referenceNumber).Validate())
+                Console.WriteLine("Finnish reference number!");
+            else
+                Console.WriteLine("International reference number!");
+
+            string myref = userIntRef.GenerateReferenceNumber(userFinRef.GenerateReferenceNumber(_referenceNumber));
+            myref = myref.Replace("RF", "");
+            while (myref.Length < 23)
+            {
+                myref = myref.Insert(2, "0");
+            }
+
+            string sumOfBill = _sumOfBill.ToString();
+            while (sumOfBill.Length < 8)
+            {
+                sumOfBill = sumOfBill.Insert(0, "0");
+            }
+
+            string myiban = userIban.ToString();
+
+            string checkDigit = CalculateCheckDigit2(myiban, myref, sumOfBill);
+
+            string outputVirtualBarcode = String.Format(
+                "[{0}] {1} {2} {3} {4} {5} {6} {7}",
+                _startcodeC.ToString(),
+                _mode,
+                userIban.ToString().Replace("FI", ""),
+                sumOfBill,
+                myref,
+                _dueDate.ToString("ddMMyy"),
+                checkDigit,
+                "[STOP]"
+            );
+
+            return outputVirtualBarcode.Replace(" ", " ");
+        }
+
+        private string CalculateCheckDigit2(string userIban, string myref, string sumOfBill)
+        {
+            string bareBarcode = String.Format(
+                "{0}{1}{2}{3}{4}",
+                _mode,
+                userIban.Replace("FI", ""),
+                sumOfBill,
+                myref,
+                _dueDate.ToString("ddMMyy")
+            );
+
+            BigInteger checkSum = BigInteger.Parse(_startcodeC.ToString());
+
+            for (int i = 0; i < 27; i++) 
+            {
+                int x = int.Parse(bareBarcode[i].ToString());
+                BigInteger sum = x * i;
+                checkSum += sum;
+            }
+
+            BigInteger remainder = checkSum % 103;
+            checkSum = remainder;
+
+            return checkSum.ToString();   
+        }
+
+        // Overrides
+
+        public override string ToString()
+        {
+            return _virtualBarcode;
         }
     }
 }

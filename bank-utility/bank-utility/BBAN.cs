@@ -12,29 +12,16 @@ namespace bank_utility
         public BBAN(string userBankAccountNumber)
         {
             _bankAccountNumber = StripWhiteSpace(userBankAccountNumber);
-            if (IsValidInput(_bankAccountNumber))
+            if (Validate())
                 _bankAccountNumber = userBankAccountNumber.Replace("-", "");
         }
 
         // Public functions
 
-        public string Convert()
-        {
-            return ConvertBBANToMachineFormat();
-        }
-
-        public bool IsValidInput(string userBankAccountNumber)
-        {
-            string bankAccountNumber = userBankAccountNumber.Replace("-", "");
-            Regex rgx = new Regex(@"^(?=.{0,14}$)[1-6|8][0-9]{0,2}\d{3}[-]?\d{2,8}$");
-            if (rgx.IsMatch(bankAccountNumber))
-                return true;
-            else
-                return false;
-        }
         public bool Validate()
         {
-            if (IsValidInput(_bankAccountNumber))
+            Regex rgx = new Regex(@"^[1-6|8]\d{0,2}\d{3}[-]?\d{2,8}$");
+            if (rgx.IsMatch(_bankAccountNumber))
                 return true;
             else
                 return false;
@@ -75,7 +62,7 @@ namespace bank_utility
 
         public bool VerifyCheckDigit(string userBankAccountNumber)
         {
-            string bankAccountNumber = ConvertBBANToMachineFormat();
+            string bankAccountNumber = ConvertBBANToMachineFormat(userBankAccountNumber);
 
             int checkDigit;
             int.TryParse(bankAccountNumber[bankAccountNumber.Length - 1].ToString(), out checkDigit);
@@ -113,7 +100,6 @@ namespace bank_utility
             else
                 Console.Write("BBAN is invalid." + Environment.NewLine);
         }
-
         public string GetBankAccountInfo(string userBankAccountNumber)
         {
             if (VerifyCheckDigit(userBankAccountNumber))
@@ -122,11 +108,21 @@ namespace bank_utility
                 return "error";
         }
 
-        // Private functions
-
         public string ConvertBBANToMachineFormat()
         {
             string machineFormatBankAccountNumber = _bankAccountNumber;
+            while (machineFormatBankAccountNumber.Length < 14)
+            {
+                if (machineFormatBankAccountNumber.StartsWith("4") || machineFormatBankAccountNumber.StartsWith("5"))
+                    machineFormatBankAccountNumber = machineFormatBankAccountNumber.Insert(7, "0");
+                else
+                    machineFormatBankAccountNumber = machineFormatBankAccountNumber.Insert(6, "0");
+            }
+            return machineFormatBankAccountNumber;
+        }
+        public string ConvertBBANToMachineFormat(string userBankAccountNumber)
+        {
+            string machineFormatBankAccountNumber = userBankAccountNumber;
             while (machineFormatBankAccountNumber.Length < 14)
             {
                 if (machineFormatBankAccountNumber.StartsWith("4") || machineFormatBankAccountNumber.StartsWith("5"))
@@ -143,6 +139,13 @@ namespace bank_utility
             bankAccountNumber = bankAccountNumber.Trim();
             bankAccountNumber = bankAccountNumber.Replace(" ", "");
             return bankAccountNumber;
+        }
+
+        // Override
+
+        public override string ToString()
+        {
+            return _bankAccountNumber;
         }
     }
 }

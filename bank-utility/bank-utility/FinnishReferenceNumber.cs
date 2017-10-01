@@ -53,7 +53,6 @@ namespace bank_utility
 
             return basePart + checkDigit.ToString();
         }
-
         public string[] GenerateReferenceNumber(string basePart, int count)
         {
             string[] referenceNumberSet = new string[count];
@@ -64,32 +63,22 @@ namespace bank_utility
             }
             return referenceNumberSet;
         }
-
         public bool Validate()
         {
-            ReferenceNumber.Trim();
-            ReferenceNumber.Replace(" ", "");
-
             Regex rgx = new Regex(@"^\d{3,18}$");
-            if (rgx.IsMatch(ReferenceNumber))
+            if (rgx.IsMatch(ReferenceNumber.Trim().Replace(" ", "")))
                 return true;
             else
                 return false;
         }
-
-
         public bool Validate(string referenceNumber)
         {
-            referenceNumber.Trim();
-            referenceNumber.Replace(" ", "");
-
             Regex rgx = new Regex(@"^\d{3,18}$");
-            if (rgx.IsMatch(referenceNumber))
+            if (rgx.IsMatch(referenceNumber.Trim().Replace(" ", "")))
                 return true;
             else
                 return false;
         }
-
         public bool ValidateCheckDigit(string referenceNumber)
         {
             if (Validate(referenceNumber))
@@ -135,7 +124,6 @@ namespace bank_utility
             else
                 return false;
         }
-
         public string FormatReferenceNumber(string referenceNumber)
         {
             string formattedReferenceNumber = "";
@@ -152,10 +140,10 @@ namespace bank_utility
                 counterInsertSpace++;
             }
             return formattedReferenceNumber;
-        }
-        public void PrintInfo()
+        }   
+        public override string ToString()
         {
-            Console.WriteLine(FormatReferenceNumber(ReferenceNumber));
+            return ReferenceNumber;
         }
     }
 }

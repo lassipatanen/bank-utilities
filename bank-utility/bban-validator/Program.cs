@@ -7,8 +7,8 @@ namespace bban_validator
     {
         static void Main(string[] args)
         {
-            string defaultBankAccount = "101710-122";
-            //string userInput2 = "159030-776"; // 159030-776
+            string defaultBankAccount = "5620092134961";
+            //string userInput2 = "159030-776"; // 159030-776, 101710-122
 
             Console.WriteLine("Enter your bank number, ty. (e.g. 562009-2134961, 159030-776)");
 
@@ -18,10 +18,10 @@ namespace bban_validator
                 userInput = defaultBankAccount;
 
             BBAN myBban = new BBAN(userInput);
-            Console.WriteLine("BBAN is: {0}", myBban.Convert());
+            Console.WriteLine("BBAN is: {0}", myBban.ToString());
 
             IBAN myIban = new IBAN(userInput);
-            Console.WriteLine("BBAN is: {0}", myIban.Convert());
+            Console.WriteLine("BBAN is: {0}", myIban.ToString());
 
             // END
             Console.WriteLine("\nPress any key to continue....");

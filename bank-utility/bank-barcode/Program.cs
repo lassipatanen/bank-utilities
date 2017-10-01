@@ -9,11 +9,17 @@ namespace bank_barcode
         static void Main(string[] args)
         {
             // init variables with defaults
-            string defaultBankAccountNumber = "101710-122";
-            string defaultSumOfBill = "100";
-            string defaultReferenceNumber = "123456";
-            string defaultDueDate = "1.7.2017";
+            /*var defaults = new[]{ new{
+                    accountNumber = "101710-122",
+                    sumOfBill = "100"
+            }};
+            */
+
             string versionNumber = "5";
+            string defaultBankAccountNumber = "562009-2134961"; // 101710-122
+            string defaultSumOfBill = "19,99";
+            string defaultReferenceNumber = "RF712348231"; // RF712348231 , 123456
+            string defaultDueDate = "01.07.2017";
 
             string bankAccountNumber;
             string sumOfBill;
@@ -26,11 +32,17 @@ namespace bank_barcode
             Console.WriteLine("Welcome to virtual bank barcode generator 9000.");
 
             // Ask user for details
-            QueryUser();
-
+            QueryUserDetails();
+    
             // create virtual barcode
-            VirtualBarcode userBarCode = new VirtualBarcode(versionNumber, bankAccountNumber, sumOfBill, referenceNumber, dueDate);
-            userBarCode.Print();
+            VirtualBarcode userBarCode = new VirtualBarcode(
+                versionNumber, 
+                bankAccountNumber, 
+                sumOfBill, 
+                referenceNumber, 
+                dueDate
+            );
+           Console.WriteLine(userBarCode.ToString());
 
 
             // END
@@ -39,23 +51,27 @@ namespace bank_barcode
 
             // Functions
 
-            void QueryUser()
+            void QueryUserDetails()
             {
-                Console.WriteLine("What is your bank account number?");
+                Console.Write("What is your bank account number? ");
                 userInput = Console.ReadLine();
                 bankAccountNumber = (String.IsNullOrEmpty(userInput)) ? defaultBankAccountNumber : userInput;
+                Console.Write("{0}\n\n", bankAccountNumber);
 
-                Console.WriteLine("How big is the bill? (e)");
+                Console.Write("How big is the bill? ");
                 userInput = Console.ReadLine();
                 sumOfBill = (String.IsNullOrEmpty(userInput)) ? defaultSumOfBill : userInput;
+                Console.Write("{0}\n\n", sumOfBill);
 
-                Console.WriteLine("Reference base part?");
+                Console.Write("Reference base part? ");
                 userInput = Console.ReadLine();
                 referenceNumber = (String.IsNullOrEmpty(userInput)) ? defaultReferenceNumber : userInput;
+                Console.Write("{0}\n\n", referenceNumber);
 
-                Console.WriteLine("Due date?");
+                Console.Write("Due date? ");
                 userInput = Console.ReadLine();
                 dueDate = (String.IsNullOrEmpty(userInput)) ? defaultDueDate : userInput;
+                Console.Write("{0}\n\n", dueDate);
             }
         }
     }
