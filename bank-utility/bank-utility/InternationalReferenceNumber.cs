@@ -1,4 +1,4 @@
-﻿ using System;
+﻿using System;
 using System.Numerics;
 using System.Collections.Generic;
 using System.Text;
@@ -12,18 +12,19 @@ namespace bank_utility
         public string ReferenceNumber { get; set; }
 
         // Const
-        public InternationalReferenceNumber(string referenceNumber)
+        public InternationalReferenceNumber(string referenceNumber = "")
         {
             // If input is null or empty do nothing
             if (String.IsNullOrEmpty(referenceNumber))
                 ReferenceNumber = "not set";
             else
                 ReferenceNumber = referenceNumber;
-                // Is input correctly formatted finnish reference number?
-                if(new finnishReferenceNumber(ReferenceNumber).Validate())
-                    // If so convert it to international format
-                    ReferenceNumber = GenerateReferenceNumber(referenceNumber);
+            // Is input correctly formatted finnish reference number?
+            if (new FinnishReferenceNumber(ReferenceNumber).Validate())
+                // If so convert it to international format
+                ReferenceNumber = GenerateReferenceNumber(referenceNumber);
         }
+
         // Public funtions
         public bool Validate()
         {
@@ -33,6 +34,16 @@ namespace bank_utility
             else
                 return false;
         }
+        public bool Validate(string referenceNumber)
+        {
+            string rf = referenceNumber.Trim().Replace(" ", "");
+            Regex rgx = new Regex(@"^RF\d{2}\d{4,20}$");
+            if (rgx.IsMatch(rf))
+                return true;
+            else
+                return false;
+        }
+
         public bool ValidateCheckDigit()
         {
             string rf = ReferenceNumber.Substring(0, 4);
@@ -49,6 +60,7 @@ namespace bank_utility
             else
                 return false;
         }
+
         public string GenerateReferenceNumber(string finnishReferenceNumber)
         {
             string internationalReferenceNumber = finnishReferenceNumber + "271500";

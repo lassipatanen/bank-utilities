@@ -14,7 +14,7 @@ namespace bank_utility
         public FinnishReferenceNumber(string referenceNumber = "")
         {
             if (String.IsNullOrEmpty(referenceNumber))
-                ReferenceNumber = "not set";
+                ReferenceNumber = "";
             else
                 ReferenceNumber = referenceNumber;
         }
@@ -63,6 +63,7 @@ namespace bank_utility
             }
             return referenceNumberSet;
         }
+
         public bool Validate()
         {
             Regex rgx = new Regex(@"^\d{3,18}$");
@@ -73,12 +74,14 @@ namespace bank_utility
         }
         public bool Validate(string referenceNumber)
         {
+            string rf = referenceNumber.Trim().Replace(" ", "");
             Regex rgx = new Regex(@"^\d{3,18}$");
-            if (rgx.IsMatch(referenceNumber.Trim().Replace(" ", "")))
+            if (rgx.IsMatch(rf))
                 return true;
             else
                 return false;
         }
+
         public bool ValidateCheckDigit(string referenceNumber)
         {
             if (Validate(referenceNumber))
@@ -124,6 +127,7 @@ namespace bank_utility
             else
                 return false;
         }
+
         public string FormatReferenceNumber(string referenceNumber)
         {
             string formattedReferenceNumber = "";
@@ -140,7 +144,8 @@ namespace bank_utility
                 counterInsertSpace++;
             }
             return formattedReferenceNumber;
-        }   
+        }
+
         public override string ToString()
         {
             return ReferenceNumber;

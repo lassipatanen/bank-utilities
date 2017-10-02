@@ -36,7 +36,10 @@ namespace reference_numbers
                         Console.WriteLine("Enter finnish reference number to convert it in to international format.");
                         FinnishReferenceNumber userRefNro = new FinnishReferenceNumber(Console.ReadLine());
                         if (userRefNro.Validate())
-                            userRefNro.ToString();
+                        {
+                            InternationalReferenceNumber irf = new InternationalReferenceNumber(userRefNro.ToString());
+                            Console.WriteLine(irf.ReferenceNumber);
+                        }
                         // end
                         option = 3;
                         break;

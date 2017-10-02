@@ -9,7 +9,6 @@ namespace bank_utility
 {
     public class VirtualBarcode
     {
-        // Variables
         private int _startcodeC = 105;
         private string _mode;
         private string _bankAccountNumber;
@@ -18,18 +17,35 @@ namespace bank_utility
         private DateTime _dueDate;
         private string _virtualBarcode;
 
-        // Const
-        public VirtualBarcode(string mode, string userBankAccountNumber, string sumOfBill, string referenceNumber, string dueDate)
+        public VirtualBarcode(string userBankAccountNumber, string sumOfBill, string referenceNumber, string dueDate)
         {
-            // check that mode is correct
-            if( mode.Equals("4") || mode.Equals("5") )
-                _mode = mode;
+            if (new FinnishReferenceNumber().Validate(referenceNumber))
+            {
+                _mode = "4";
+                _referenceNumber = referenceNumber.Trim().Replace(" ", "");
+            }
+            else if (new InternationalReferenceNumber().Validate(referenceNumber))
+            {
+                _mode = "5";
+                _referenceNumber = referenceNumber.Trim().Replace(" ", "");
+            }
+            else
+            {
+                // throw error
+            }
 
-            if(IsValidBbanOrIban(userBankAccountNumber))
-                _bankAccountNumber = userBankAccountNumber;
-
-            if(new FinnishReferenceNumber(referenceNumber).Validate() || new InternationalReferenceNumber(referenceNumber).Validate())
-                _referenceNumber = referenceNumber;
+            if (new BBAN().Validate(userBankAccountNumber))
+            {
+                _bankAccountNumber = new IBAN(userBankAccountNumber).ToString().Trim().Replace(" ", "");
+            }
+            else if (new IBAN().Validate(userBankAccountNumber))
+            {
+                _bankAccountNumber = userBankAccountNumber.Trim().Replace(" ", "");
+            }
+            else
+            {
+                // throw error
+            }
 
             Decimal.TryParse(sumOfBill, out _sumOfBill);
 
@@ -38,91 +54,81 @@ namespace bank_utility
             _virtualBarcode = BuildVirtualBarcode();
         }
 
-        // Private functions
-
-        private bool IsValidBbanOrIban(string userBankAccountNumber)
-        {
-            BBAN isBBAN = new BBAN(userBankAccountNumber);
-            IBAN isIBAN = new IBAN(userBankAccountNumber);
-
-            if(new BBAN(userBankAccountNumber).Validate() || new IBAN(userBankAccountNumber).Validate())
-                return true;
-            else
-                return false;
-        }
-
         private string BuildVirtualBarcode()
         {
-            BBAN userBban = new BBAN(_bankAccountNumber);
-            IBAN userIban = new IBAN(_bankAccountNumber);
-
-            FinnishReferenceNumber userFinRef = new FinnishReferenceNumber(_referenceNumber);
-            InternationalReferenceNumber userIntRef = new InternationalReferenceNumber(userFinRef.ToString());
-
-            if(new FinnishReferenceNumber(_referenceNumber).Validate())
-                Console.WriteLine("Finnish reference number!");
-            else
-                Console.WriteLine("International reference number!");
-
-            string myref = userIntRef.GenerateReferenceNumber(userFinRef.GenerateReferenceNumber(_referenceNumber));
-            myref = myref.Replace("RF", "");
-            while (myref.Length < 23)
+            string myref = _referenceNumber;
+            if (_mode.Equals("4"))
             {
-                myref = myref.Insert(2, "0");
+                while (myref.Length < 20)
+                {
+                    myref = myref.Insert(0, "0");
+                }
+                myref = myref.Insert(0, "000");
+            }
+            if (_mode.Equals("5"))
+            {
+                myref = myref.Replace("RF", "");
+                while (myref.Length < 23)
+                {
+                    myref = myref.Insert(2, "0");
+                }
             }
 
-            string sumOfBill = _sumOfBill.ToString();
+            string sumOfBill = _sumOfBill.ToString().Replace(",", "");
             while (sumOfBill.Length < 8)
             {
                 sumOfBill = sumOfBill.Insert(0, "0");
             }
 
-            string myiban = userIban.ToString();
-
-            string checkDigit = CalculateCheckDigit2(myiban, myref, sumOfBill);
+            string checkDigit = CalculateCheckDigit2(myref, sumOfBill);
 
             string outputVirtualBarcode = String.Format(
-                "[{0}] {1} {2} {3} {4} {5} {6} {7}",
+                "[{0}]{1}{2}{3}{4}{5}{6}{7}",
                 _startcodeC.ToString(),
                 _mode,
-                userIban.ToString().Replace("FI", ""),
+                _bankAccountNumber.Replace("FI", ""),
                 sumOfBill,
                 myref,
-                _dueDate.ToString("ddMMyy"),
+                _dueDate.ToString("yyMMdd"),
                 checkDigit,
                 "[STOP]"
             );
 
-            return outputVirtualBarcode.Replace(" ", " ");
+            return outputVirtualBarcode;
         }
 
-        private string CalculateCheckDigit2(string userIban, string myref, string sumOfBill)
+        private string CalculateCheckDigit2(string myref, string sumOfBill)
         {
             string bareBarcode = String.Format(
                 "{0}{1}{2}{3}{4}",
                 _mode,
-                userIban.Replace("FI", ""),
+                _bankAccountNumber.Replace("FI", ""),
                 sumOfBill,
                 myref,
-                _dueDate.ToString("ddMMyy")
+                _dueDate.ToString("yyMMdd")
             );
 
             BigInteger checkSum = BigInteger.Parse(_startcodeC.ToString());
 
-            for (int i = 0; i < 27; i++) 
+            string[] valuePairs = new string[27];
+            var valuePairStartIndex = 0;
+            for (int i = 0; i < 27; i++)
             {
-                int x = int.Parse(bareBarcode[i].ToString());
-                BigInteger sum = x * i;
+                valuePairs[i] = bareBarcode.Substring(valuePairStartIndex, 2);
+                valuePairStartIndex += 2;
+            }
+
+            for (int i = 1; i <= 27; i++)
+            {
+                int valuePair = int.Parse(valuePairs[i - 1]);
+                BigInteger sum = valuePair * i;
                 checkSum += sum;
             }
 
             BigInteger remainder = checkSum % 103;
-            checkSum = remainder;
 
-            return checkSum.ToString();   
+            return remainder.ToString();
         }
-
-        // Overrides
 
         public override string ToString()
         {

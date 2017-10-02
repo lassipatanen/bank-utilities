@@ -9,17 +9,15 @@ namespace bank_utility
 {
     public class IBAN
     {
-        // Variables
         private string _bankAccountNumber;
 
-        // Const
+        public IBAN() { }
         public IBAN(string userBankAccountNumber)
         {
-            if(new BBAN(userBankAccountNumber).Validate())
+            if (new BBAN(userBankAccountNumber).Validate())
                 _bankAccountNumber = ConvertBBANToIBAN(userBankAccountNumber);
         }
 
-        // Public functions
         public bool Validate()
         {
             Regex rgx = new Regex(@"^FI\d{2}[1-6|8]\d{13}$");
@@ -28,6 +26,15 @@ namespace bank_utility
             else
                 return false;
         }
+        public bool Validate(string bankAccountNumber)
+        {
+            Regex rgx = new Regex(@"^FI\d{2}[1-6|8]\d{13}$");
+            if (rgx.IsMatch(bankAccountNumber.Trim().Replace(" ", "")))
+                return true;
+            else
+                return false;
+        }
+
         public int CalculateCheckDigit(string userBankAccountNumber)
         {
             return 0;
@@ -64,7 +71,6 @@ namespace bank_utility
             return checkSum % 10 == 0;
         }
 
-        // Private functions
         private string ConvertBBANToIBAN(string userBankAccountNumber)
         {
             string bankNumberMachineFormat = new BBAN(userBankAccountNumber).ConvertBBANToMachineFormat();
@@ -141,15 +147,7 @@ namespace bank_utility
                 return bicCode;
             }
         }
-        private string StripWhiteSpace(string userBankAccountNumber)
-        {
-            string bankNumber = userBankAccountNumber;
-            bankNumber = bankNumber.Trim();
-            bankNumber = bankNumber.Replace(" ", "");
-            return bankNumber;
-        }
 
-        // Overrides
         public override string ToString()
         {
             return _bankAccountNumber;
