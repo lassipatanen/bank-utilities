@@ -74,9 +74,9 @@ namespace bank_utility
         }
         public bool Validate(string referenceNumber)
         {
-            string rf = referenceNumber.Trim().Replace(" ", "");
+            referenceNumber = referenceNumber.Trim().Replace(" ", "");
             Regex rgx = new Regex(@"^\d{3,18}$");
-            if (rgx.IsMatch(rf))
+            if (rgx.IsMatch(referenceNumber))
                 return true;
             else
                 return false;
@@ -84,6 +84,7 @@ namespace bank_utility
 
         public bool ValidateCheckDigit(string referenceNumber)
         {
+            referenceNumber = referenceNumber.Trim().Replace(" ", "");
             if (Validate(referenceNumber))
             {
                 int checkDigitToCompare = int.Parse(referenceNumber[referenceNumber.Length - 1].ToString());

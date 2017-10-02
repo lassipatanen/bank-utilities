@@ -36,9 +36,9 @@ namespace bank_utility
         }
         public bool Validate(string referenceNumber)
         {
-            string rf = referenceNumber.Trim().Replace(" ", "");
+            referenceNumber = referenceNumber.Trim().Replace(" ", "");
             Regex rgx = new Regex(@"^RF\d{2}\d{4,20}$");
-            if (rgx.IsMatch(rf))
+            if (rgx.IsMatch(referenceNumber))
                 return true;
             else
                 return false;
@@ -48,6 +48,23 @@ namespace bank_utility
         {
             string rf = ReferenceNumber.Substring(0, 4);
             string myInternationalRefNro = ReferenceNumber.Remove(0, 4) + rf;
+            myInternationalRefNro = myInternationalRefNro.Replace("RF", "2715");
+
+            BigInteger evaluatedNumber;
+            BigInteger.TryParse(myInternationalRefNro, out evaluatedNumber);
+
+            BigInteger remainder = evaluatedNumber % 97;
+
+            if (remainder == 1)
+                return true;
+            else
+                return false;
+        }
+        public bool ValidateCheckDigit(string referenceNumber)
+        {
+            referenceNumber = referenceNumber.Trim().Replace(" ", "");
+            string rf = referenceNumber.Substring(0, 4);
+            string myInternationalRefNro = referenceNumber.Remove(0, 4) + rf;
             myInternationalRefNro = myInternationalRefNro.Replace("RF", "2715");
 
             BigInteger evaluatedNumber;
