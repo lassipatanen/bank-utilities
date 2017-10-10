@@ -113,7 +113,7 @@ namespace bank_utility
             else
                 return false;
         }
-        private string GetBicCode(string userBankAccountNumber)
+        public static string GetBicCode(string userBankAccountNumber)
         {
             List<Bic> bicCodes = new List<Bic>();
 
