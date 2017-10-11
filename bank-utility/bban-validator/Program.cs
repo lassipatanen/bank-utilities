@@ -21,7 +21,12 @@ namespace bban_validator
             Console.WriteLine("BBAN is: {0}", myBban.ToString());
 
             IBAN myIban = new IBAN(userInput);
-            Console.WriteLine("BBAN is: {0}", myIban.ToString());
+            Console.WriteLine("IBAN is: {0}", myIban.ToString());
+
+            if (new IBAN().Validate("FI2056200920134962"))
+                Console.WriteLine("y");
+            else
+                Console.WriteLine("n");
 
             // END
             Console.WriteLine("\nPress any key to continue....");

@@ -21,7 +21,10 @@ namespace bank_utility
         public bool Validate()
         {
             Regex rgx = new Regex(@"^FI\d{2}[1-6|8]\d{13}$");
-            if (rgx.IsMatch(_bankAccountNumber))
+            if (
+                rgx.IsMatch(_bankAccountNumber) && 
+                VerifyIBANAccountNumber(_bankAccountNumber)
+                )
                 return true;
             else
                 return false;
@@ -29,7 +32,10 @@ namespace bank_utility
         public bool Validate(string bankAccountNumber)
         {
             Regex rgx = new Regex(@"^FI\d{2}[1-6|8]\d{13}$");
-            if (rgx.IsMatch(bankAccountNumber.Trim().Replace(" ", "")))
+            if (
+                rgx.IsMatch(bankAccountNumber.Trim().Replace(" ", "")) &&
+                VerifyIBANAccountNumber(bankAccountNumber)
+                )
                 return true;
             else
                 return false;
