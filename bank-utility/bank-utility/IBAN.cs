@@ -4,6 +4,7 @@ using System.IO;
 using System.Numerics;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace BankUtility
 {
@@ -119,38 +120,27 @@ namespace BankUtility
         }
         public static string GetBicCode(string userBankAccountNumber)
         {
-            List<Bic> bicCodes = new List<Bic>();
-
             var assembly = Assembly.GetExecutingAssembly();
-            var textStreamReader = new StreamReader(assembly.GetManifestResourceStream("bic-codes.json"));
 
-            string path = @"C:\dev\bank-utilities\bank-utility\bank-utility\bic-codes.json";
-
-            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-            using (var sr = new StreamReader(fs))
+            using (var textStreamReader = new StreamReader(assembly.GetManifestResourceStream("BankUtility.bic-codes.json")))
             {
-                string json = sr.ReadToEnd();
-                bicCodes = JsonConvert.DeserializeObject<List<Bic>>(json);
+                string json = textStreamReader.ReadToEnd();
+                List<Bic> bicCodes = JsonConvert.DeserializeObject<List<Bic>>(json);
 
-                string bankID;
+                string bankId;
 
                 if (userBankAccountNumber[0].Equals("3"))
-                    bankID = userBankAccountNumber.Substring(4, 2);
+                    bankId = userBankAccountNumber.Substring(4, 2);
                 else if (userBankAccountNumber[0].Equals("4") || userBankAccountNumber[0].Equals("7"))
-                    bankID = userBankAccountNumber.Substring(4, 3);
+                    bankId = userBankAccountNumber.Substring(4, 3);
                 else
-                    bankID = userBankAccountNumber.Substring(4, 1);
+                    bankId = userBankAccountNumber.Substring(4, 1);
 
-                string bicCode = "";
-                foreach (Bic bicObj in bicCodes)
-                {
-                    if (bicObj.Id == bankID)
-                    {
-                        bicCode = bicObj.Name;
-                        break;
-                    }
-                }
-                return bicCode;
+                Bic bicCode = bicCodes
+                              .Where(b => b.Id == bankId)
+                              .FirstOrDefault();
+
+                return bicCode.Name;
             }
         }
 

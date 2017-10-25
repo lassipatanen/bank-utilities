@@ -29,6 +29,9 @@ namespace bban_validator
             else
                 Console.WriteLine($"{newIban} is invalid.");
 
+            Console.WriteLine(Iban.GetBicCode(iban.ToString()));
+
+
             // END
             Console.WriteLine("\nPress any key to continue....");
             Console.ReadKey();
