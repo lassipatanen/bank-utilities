@@ -1,9 +1,10 @@
-using System;
-using System.Numerics;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json;
+using System.Numerics;
+using System.Reflection;
 using System.Text.RegularExpressions;
+using System;
 
 namespace bank_utility
 {
@@ -123,10 +124,13 @@ namespace bank_utility
         {
             List<Bic> bicCodes = new List<Bic>();
 
+            var assembly = Assembly.GetExecutingAssembly();
+            var textStreamReader = new StreamReader(assembly.GetManifestResourceStream("bic-codes.json"));
+
             string path = @"C:\dev\bank-utilities\bank-utility\bank-utility\bic-codes.json";
 
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-            using (var sr = new System.IO.StreamReader(fs))
+            using (var sr = new StreamReader(fs))
             {
                 //Read file via sr.Read(), sr.ReadLine, ...
                 string json = sr.ReadToEnd();
