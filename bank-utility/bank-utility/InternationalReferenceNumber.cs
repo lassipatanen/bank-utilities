@@ -1,31 +1,24 @@
 ﻿using System;
 using System.Numerics;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
-namespace bank_utility
+namespace BankUtility
 {
     public class InternationalReferenceNumber
     {
-        // Properties
         public string ReferenceNumber { get; set; }
 
-        // Const
         public InternationalReferenceNumber(string referenceNumber = "")
         {
-            // If input is null or empty do nothing
             if (String.IsNullOrEmpty(referenceNumber))
                 ReferenceNumber = "not set";
             else
                 ReferenceNumber = referenceNumber;
-            // Is input correctly formatted finnish reference number?
+
             if (new FinnishReferenceNumber(ReferenceNumber).Validate())
-                // If so convert it to international format
                 ReferenceNumber = GenerateReferenceNumber(referenceNumber);
         }
 
-        // Public funtions
         public bool Validate()
         {
             Regex rgx = new Regex(@"^RF\d{2}\d{4,20}$");
@@ -67,9 +60,7 @@ namespace bank_utility
             string myInternationalRefNro = referenceNumber.Remove(0, 4) + rf;
             myInternationalRefNro = myInternationalRefNro.Replace("RF", "2715");
 
-            BigInteger evaluatedNumber;
-            BigInteger.TryParse(myInternationalRefNro, out evaluatedNumber);
-
+            BigInteger.TryParse(myInternationalRefNro, out BigInteger evaluatedNumber);
             BigInteger remainder = evaluatedNumber % 97;
 
             if (remainder == 1)
@@ -83,9 +74,7 @@ namespace bank_utility
             string internationalReferenceNumber = finnishReferenceNumber + "271500";
             string countryIdAndDigit;
 
-            BigInteger evaluatedNumber;
-            BigInteger.TryParse(internationalReferenceNumber, out evaluatedNumber);
-
+            BigInteger.TryParse(internationalReferenceNumber, out BigInteger evaluatedNumber);
             BigInteger remainder = evaluatedNumber % 97;
             BigInteger checkDigit = 98 - remainder;
 

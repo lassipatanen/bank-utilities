@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
-namespace bank_utility
+namespace BankUtility
 {
     public class FinnishReferenceNumber
     {
-        // Properties
         public string ReferenceNumber { get; set; }
 
-        // Const
         public FinnishReferenceNumber(string referenceNumber = "")
         {
             if (String.IsNullOrEmpty(referenceNumber))
@@ -19,7 +15,6 @@ namespace bank_utility
                 ReferenceNumber = referenceNumber;
         }
 
-        // Public methods
         public string GenerateReferenceNumber(string basePart)
         {
             int checkSum = 0;
@@ -129,7 +124,7 @@ namespace bank_utility
                 return false;
         }
 
-        public string FormatReferenceNumber(string referenceNumber)
+        public string Beautify(string referenceNumber)
         {
             string formattedReferenceNumber = "";
             int counterInsertSpace = 1;

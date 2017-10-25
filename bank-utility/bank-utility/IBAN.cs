@@ -4,18 +4,17 @@ using System.IO;
 using System.Numerics;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System;
 
-namespace bank_utility
+namespace BankUtility
 {
-    public class IBAN
+    public class Iban
     {
         private string _bankAccountNumber;
 
-        public IBAN() { }
-        public IBAN(string userBankAccountNumber)
+        public Iban() { }
+        public Iban(string userBankAccountNumber)
         {
-            if (new BBAN(userBankAccountNumber).Validate())
+            if (new Bban(userBankAccountNumber).Validate())
                 _bankAccountNumber = ConvertBBANToIBAN(userBankAccountNumber);
         }
 
@@ -23,7 +22,7 @@ namespace bank_utility
         {
             Regex rgx = new Regex(@"^FI\d{2}[1-6|8]\d{13}$");
             if (
-                rgx.IsMatch(_bankAccountNumber) && 
+                rgx.IsMatch(_bankAccountNumber) &&
                 VerifyIBANAccountNumber(_bankAccountNumber)
                 )
                 return true;
@@ -48,7 +47,7 @@ namespace bank_utility
         }
         public bool VerifyCheckDigit(string userBankAccountNumber)
         {
-            string bankNumber = new BBAN(userBankAccountNumber).ConvertBBANToMachineFormat();
+            string bankNumber = new Bban(userBankAccountNumber).ConvertBBANToMachineFormat();
 
             int checkDigit;
             int.TryParse(bankNumber[bankNumber.Length - 1].ToString(), out checkDigit);
@@ -80,7 +79,7 @@ namespace bank_utility
 
         private string ConvertBBANToIBAN(string userBankAccountNumber)
         {
-            string bankNumberMachineFormat = new BBAN(userBankAccountNumber).ConvertBBANToMachineFormat();
+            string bankNumberMachineFormat = new Bban(userBankAccountNumber).ConvertBBANToMachineFormat();
             string bankNumber = bankNumberMachineFormat;
             bankNumber = bankNumber + "FI00";
             bankNumber = bankNumber.Replace("FI", "1518");
@@ -106,15 +105,13 @@ namespace bank_utility
         {
             string bankNumber = userBankAccountNumber;
             string countryIdAndDigit = bankNumber.Substring(0, 4);
+
             bankNumber = bankNumber.Replace(countryIdAndDigit, "");
             bankNumber = bankNumber + countryIdAndDigit;
             bankNumber = bankNumber.Replace("FI", "1518");
 
-            BigInteger eval;
-            BigInteger.TryParse(bankNumber, out eval);
-
+            BigInteger.TryParse(bankNumber, out BigInteger eval);
             BigInteger checkSum = eval % 97;
-
             if (checkSum == 1)
                 return true;
             else
@@ -132,7 +129,6 @@ namespace bank_utility
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             using (var sr = new StreamReader(fs))
             {
-                //Read file via sr.Read(), sr.ReadLine, ...
                 string json = sr.ReadToEnd();
                 bicCodes = JsonConvert.DeserializeObject<List<Bic>>(json);
 

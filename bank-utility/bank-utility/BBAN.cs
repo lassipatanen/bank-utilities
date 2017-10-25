@@ -1,14 +1,13 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-namespace bank_utility
+namespace BankUtility
 {
-    public class BBAN
+    public class Bban
     {
         private string _bankAccountNumber;
 
-        public BBAN() { }
-        public BBAN(string userBankAccountNumber = "")
+        public Bban() { }
+        public Bban(string userBankAccountNumber = "")
         {
             _bankAccountNumber = userBankAccountNumber.Trim().Replace(" ", "");
             if (Validate())

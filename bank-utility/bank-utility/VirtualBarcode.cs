@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Numerics;
-using System.Text;
-using System.Text.RegularExpressions;
 
-namespace bank_utility
+namespace BankUtility
 {
     public class VirtualBarcode
     {
@@ -19,9 +15,9 @@ namespace bank_utility
 
         public VirtualBarcode(string userBankAccountNumber, string sumOfBill, string referenceNumber, string dueDate)
         {
-            if (new BBAN().Validate(userBankAccountNumber))
-                _bankAccountNumber = new IBAN(userBankAccountNumber).ToString().Trim().Replace(" ", "");
-            else if (new IBAN().Validate(userBankAccountNumber))
+            if (new Bban().Validate(userBankAccountNumber))
+                _bankAccountNumber = new Iban(userBankAccountNumber).ToString().Trim().Replace(" ", "");
+            else if (new Iban().Validate(userBankAccountNumber))
                 _bankAccountNumber = userBankAccountNumber.Trim().Replace(" ", "");
             else
                 throw new Exception("Invalid bank account number!");
@@ -40,7 +36,7 @@ namespace bank_utility
             else if (new InternationalReferenceNumber().Validate(referenceNumber))
             {
                 _mode = "5";
-                if(new InternationalReferenceNumber().ValidateCheckDigit(referenceNumber))
+                if (new InternationalReferenceNumber().ValidateCheckDigit(referenceNumber))
                     _referenceNumber = referenceNumber.Trim().Replace(" ", "");
                 else
                     throw new Exception("Int. reference numbers is invalid!");
