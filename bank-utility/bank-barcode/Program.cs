@@ -1,5 +1,5 @@
 ﻿using System;
-using bank_utility;
+using BankUtility;
 using System.Text.RegularExpressions;
 
 namespace bank_barcode

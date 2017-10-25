@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 
 namespace BankUtility
 {
@@ -7,11 +8,15 @@ namespace BankUtility
         private string _bankAccountNumber;
 
         public Bban() { }
-        public Bban(string userBankAccountNumber = "")
+        public Bban(string userBankAccountNumber)
         {
-            _bankAccountNumber = userBankAccountNumber.Trim().Replace(" ", "");
-            if (Validate())
-                _bankAccountNumber = userBankAccountNumber.Replace("-", "");
+            userBankAccountNumber = userBankAccountNumber
+                                    .Trim()
+                                    .Replace(" ", "")
+                                    .Replace("-", "");
+
+            if (Validate(userBankAccountNumber))
+                _bankAccountNumber = userBankAccountNumber;            
         }
 
         public bool Validate()

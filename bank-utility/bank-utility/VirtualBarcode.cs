@@ -5,15 +5,20 @@ namespace BankUtility
 {
     public class VirtualBarcode
     {
-        private string _startcodeC = "105";
-        private string _mode;
-        private string _bankAccountNumber;
-        private decimal _sumOfBill;
-        private string _referenceNumber;
         private DateTime _dueDate;
+        private decimal _sumOfBill;
+        private string _bankAccountNumber;
+        private string _mode;
+        private string _referenceNumber;
+        private string _startcodeC = "105";
         private string _virtualBarcode;
 
-        public VirtualBarcode(string userBankAccountNumber, string sumOfBill, string referenceNumber, string dueDate)
+        public VirtualBarcode(
+            string userBankAccountNumber, 
+            string sumOfBill, 
+            string referenceNumber, 
+            string dueDate
+            )
         {
             if (new Bban().Validate(userBankAccountNumber))
                 _bankAccountNumber = new Iban(userBankAccountNumber).ToString().Trim().Replace(" ", "");

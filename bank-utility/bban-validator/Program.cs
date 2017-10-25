@@ -1,5 +1,5 @@
 ﻿using System;
-using bank_utility;
+using BankUtility;
 
 namespace bban_validator
 {
@@ -17,16 +17,17 @@ namespace bban_validator
             if (String.IsNullOrEmpty(userInput))
                 userInput = defaultBankAccount;
 
-            BBAN myBban = new BBAN(userInput);
-            Console.WriteLine("BBAN is: {0}", myBban.ToString());
+            Bban bban = new Bban(userInput);
+            Console.WriteLine("BBAN is: {0}", bban.ToString());
 
-            IBAN myIban = new IBAN(userInput);
-            Console.WriteLine("IBAN is: {0}", myIban.ToString());
+            Iban iban = new Iban(userInput);
+            Console.WriteLine("IBAN is: {0}", iban.ToString());
 
-            if (new IBAN().Validate("FI2056200920134962"))
-                Console.WriteLine("y");
+            string newIban = "FI2056200920134961";
+            if (new Iban().Validate(newIban))
+                Console.WriteLine($"{newIban} is valid.");
             else
-                Console.WriteLine("n");
+                Console.WriteLine($"{newIban} is invalid.");
 
             // END
             Console.WriteLine("\nPress any key to continue....");
