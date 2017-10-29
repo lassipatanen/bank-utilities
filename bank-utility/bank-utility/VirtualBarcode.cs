@@ -20,9 +20,9 @@ namespace BankUtility
             string dueDate
             )
         {
-            if (new Bban().Validate(userBankAccountNumber))
+            if (Bban.Validate(userBankAccountNumber))
                 _bankAccountNumber = new Iban(userBankAccountNumber).ToString().Trim().Replace(" ", "");
-            else if (new Iban().Validate(userBankAccountNumber))
+            else if (Iban.Validate(userBankAccountNumber))
                 _bankAccountNumber = userBankAccountNumber.Trim().Replace(" ", "");
             else
                 throw new Exception("Invalid bank account number!");

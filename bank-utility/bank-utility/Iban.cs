@@ -13,53 +13,40 @@ namespace BankUtility
         private string _bankAccountNumber;
 
         public Iban() { }
-        public Iban(string userBankAccountNumber)
+        public Iban(string bankAccountNumber)
         {
-            if (new Bban(userBankAccountNumber).Validate())
-                _bankAccountNumber = ConvertBBANToIBAN(userBankAccountNumber);
+            if (Bban.Validate(bankAccountNumber))
+                _bankAccountNumber = ConvertBBANToIBAN(bankAccountNumber);
         }
 
-        public bool Validate()
-        {
-            Regex rgx = new Regex(@"^FI\d{2}[1-6|8]\d{13}$");
-            if (
-                rgx.IsMatch(_bankAccountNumber) &&
-                VerifyIBANAccountNumber(_bankAccountNumber)
-                )
-                return true;
-            else
-                return false;
-        }
-        public bool Validate(string bankAccountNumber)
+        public static bool Validate(string bankAccountNumber)
         {
             Regex rgx = new Regex(@"^FI\d{2}[1-6|8]\d{13}$");
             if (
                 rgx.IsMatch(bankAccountNumber.Trim().Replace(" ", "")) &&
-                VerifyIBANAccountNumber(bankAccountNumber)
+                new Iban().VerifyIBANAccountNumber(bankAccountNumber)
                 )
                 return true;
             else
                 return false;
         }
 
-        public int CalculateCheckDigit(string userBankAccountNumber)
+        public int CalculateCheckDigit(string bankAccountNumber)
         {
             return 0;
         }
-        public bool VerifyCheckDigit(string userBankAccountNumber)
+        public bool VerifyCheckDigit(string bankAccountNumber)
         {
-            string bankNumber = new Bban(userBankAccountNumber).ConvertBBANToMachineFormat();
+            bankAccountNumber = Bban.ConvertToMachineFormat(bankAccountNumber);
 
-            int checkDigit;
-            int.TryParse(bankNumber[bankNumber.Length - 1].ToString(), out checkDigit);
+            int.TryParse(bankAccountNumber[bankAccountNumber.Length - 1].ToString(), out int checkDigit);
 
             int checkSum = checkDigit;
             bool isOdd = false;
 
-            for (int i = bankNumber.Length - 2; i >= 0; i--)
+            for (int i = bankAccountNumber.Length - 2; i >= 0; i--)
             {
-                int digit;
-                int.TryParse(bankNumber[i].ToString(), out digit);
+                int.TryParse(bankAccountNumber[i].ToString(), out int digit);
 
                 if (isOdd)
                 {
@@ -78,17 +65,16 @@ namespace BankUtility
             return checkSum % 10 == 0;
         }
 
-        private string ConvertBBANToIBAN(string userBankAccountNumber)
+        private string ConvertBBANToIBAN(string bankAccountNumber)
         {
-            string bankNumberMachineFormat = new Bban(userBankAccountNumber).ConvertBBANToMachineFormat();
+            string bankNumberMachineFormat = Bban.ConvertToMachineFormat(bankAccountNumber);
             string bankNumber = bankNumberMachineFormat;
             bankNumber = bankNumber + "FI00";
             bankNumber = bankNumber.Replace("FI", "1518");
 
             string countryIdAndDigit;
 
-            BigInteger evaluatedNumber;
-            bool isit = BigInteger.TryParse(bankNumber, out evaluatedNumber);
+            BigInteger.TryParse(bankNumber, out BigInteger evaluatedNumber);
 
             BigInteger remainder = evaluatedNumber % 97;
             BigInteger checkDigit = 98 - remainder;
@@ -102,23 +88,22 @@ namespace BankUtility
 
             return bankNumber;
         }
-        private bool VerifyIBANAccountNumber(string userBankAccountNumber)
+        private bool VerifyIBANAccountNumber(string bankAccountNumber)
         {
-            string bankNumber = userBankAccountNumber;
-            string countryIdAndDigit = bankNumber.Substring(0, 4);
+            string countryIdAndDigit = bankAccountNumber.Substring(0, 4);
 
-            bankNumber = bankNumber.Replace(countryIdAndDigit, "");
-            bankNumber = bankNumber + countryIdAndDigit;
-            bankNumber = bankNumber.Replace("FI", "1518");
+            bankAccountNumber = bankAccountNumber.Replace(countryIdAndDigit, "");
+            bankAccountNumber = bankAccountNumber + countryIdAndDigit;
+            bankAccountNumber = bankAccountNumber.Replace("FI", "1518");
 
-            BigInteger.TryParse(bankNumber, out BigInteger eval);
+            BigInteger.TryParse(bankAccountNumber, out BigInteger eval);
             BigInteger checkSum = eval % 97;
             if (checkSum == 1)
                 return true;
             else
                 return false;
         }
-        public static string GetBicCode(string userBankAccountNumber)
+        public static string GetBicCode(string bankAccountNumber)
         {
             var assembly = Assembly.GetExecutingAssembly();
 
@@ -129,12 +114,12 @@ namespace BankUtility
 
                 string bankId;
 
-                if (userBankAccountNumber[0].Equals("3"))
-                    bankId = userBankAccountNumber.Substring(4, 2);
-                else if (userBankAccountNumber[0].Equals("4") || userBankAccountNumber[0].Equals("7"))
-                    bankId = userBankAccountNumber.Substring(4, 3);
+                if (bankAccountNumber[0].Equals("3"))
+                    bankId = bankAccountNumber.Substring(4, 2);
+                else if (bankAccountNumber[0].Equals("4") || bankAccountNumber[0].Equals("7"))
+                    bankId = bankAccountNumber.Substring(4, 3);
                 else
-                    bankId = userBankAccountNumber.Substring(4, 1);
+                    bankId = bankAccountNumber.Substring(4, 1);
 
                 Bic bicCode = bicCodes
                               .Where(b => b.Id == bankId)

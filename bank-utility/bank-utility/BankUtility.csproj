@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>Bank Utility library for dealing with BBAN and IBAN account numbers plus Finnish and International reference numbers.</Description>
   </PropertyGroup>
 
   <ItemGroup>

@@ -24,7 +24,7 @@ namespace bban_validator
             Console.WriteLine("IBAN is: {0}", iban.ToString());
 
             string newIban = "FI2056200920134961";
-            if (new Iban().Validate(newIban))
+            if (Iban.Validate(newIban))
                 Console.WriteLine($"{newIban} is valid.");
             else
                 Console.WriteLine($"{newIban} is invalid.");

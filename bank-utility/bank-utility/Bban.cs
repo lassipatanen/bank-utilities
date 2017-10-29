@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace BankUtility
 {
@@ -16,18 +15,10 @@ namespace BankUtility
                                     .Replace("-", "");
 
             if (Validate(userBankAccountNumber))
-                _bankAccountNumber = userBankAccountNumber;            
+                _bankAccountNumber = userBankAccountNumber;
         }
 
-        public bool Validate()
-        {
-            Regex rgx = new Regex(@"^[1-6|8]\d{0,2}\d{3}[-]?\d{2,8}$");
-            if (rgx.IsMatch(_bankAccountNumber))
-                return true;
-            else
-                return false;
-        }
-        public bool Validate(string bankAccountNumber)
+        public static bool Validate(string bankAccountNumber)
         {
             Regex rgx = new Regex(@"^[1-6|8]\d{0,2}\d{3}[-]?\d{2,8}$");
             if (rgx.IsMatch(bankAccountNumber))
@@ -36,16 +27,15 @@ namespace BankUtility
                 return false;
         }
 
-        public int CalculateCheckDigit(string userBankAccountNumber)
+        public int CalculateCheckDigit(string bankAccountNumber)
         {
-            string bankAccountNumber = ConvertBBANToMachineFormat();
+            bankAccountNumber = ConvertToMachineFormat(bankAccountNumber);
             int checkDigit = 0;
             int checkSum = 0;
 
             for (int i = bankAccountNumber.Length - 1; i >= 0; i--)
             {
-                int digit;
-                int.TryParse(bankAccountNumber[i].ToString(), out digit);
+                int.TryParse(bankAccountNumber[i].ToString(), out int digit);
 
                 int isOdd = i % 2;
                 if (isOdd != 0)
@@ -70,18 +60,16 @@ namespace BankUtility
         }
         public bool VerifyCheckDigit(string userBankAccountNumber)
         {
-            string bankAccountNumber = ConvertBBANToMachineFormat(userBankAccountNumber);
+            string bankAccountNumber = ConvertToMachineFormat(userBankAccountNumber);
 
-            int checkDigit;
-            int.TryParse(bankAccountNumber[bankAccountNumber.Length - 1].ToString(), out checkDigit);
+            int.TryParse(bankAccountNumber[bankAccountNumber.Length - 1].ToString(), out int checkDigit);
 
             int checkSum = checkDigit;
             bool isOdd = false;
 
             for (int i = bankAccountNumber.Length - 2; i >= 0; i--)
             {
-                int digit;
-                int.TryParse(bankAccountNumber[i].ToString(), out digit);
+                int.TryParse(bankAccountNumber[i].ToString(), out int digit);
 
                 if (isOdd)
                 {
@@ -100,21 +88,9 @@ namespace BankUtility
             return checkSum % 10 == 0;
         }
 
-        public string ConvertBBANToMachineFormat()
+        public static string ConvertToMachineFormat(string bankAccountNumber)
         {
-            string machineFormatBankAccountNumber = _bankAccountNumber;
-            while (machineFormatBankAccountNumber.Length < 14)
-            {
-                if (machineFormatBankAccountNumber.StartsWith("4") || machineFormatBankAccountNumber.StartsWith("5"))
-                    machineFormatBankAccountNumber = machineFormatBankAccountNumber.Insert(7, "0");
-                else
-                    machineFormatBankAccountNumber = machineFormatBankAccountNumber.Insert(6, "0");
-            }
-            return machineFormatBankAccountNumber;
-        }
-        public string ConvertBBANToMachineFormat(string userBankAccountNumber)
-        {
-            string machineFormatBankAccountNumber = userBankAccountNumber;
+            string machineFormatBankAccountNumber = bankAccountNumber;
             while (machineFormatBankAccountNumber.Length < 14)
             {
                 if (machineFormatBankAccountNumber.StartsWith("4") || machineFormatBankAccountNumber.StartsWith("5"))
